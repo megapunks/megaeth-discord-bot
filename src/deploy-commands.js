@@ -14,7 +14,7 @@ for (const file of commandFiles) {
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 // جایگزین با آی‌دی خودت:
-const clientId = 'YOUR_CLIENT_ID';
+const clientId = '1382438594647429283';
 const guildId = 'YOUR_GUILD_ID';
 
 (async () => {
