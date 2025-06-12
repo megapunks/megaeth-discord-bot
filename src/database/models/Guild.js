@@ -2,12 +2,7 @@ const mongoose = require('mongoose');
 
 const guildSchema = new mongoose.Schema({
   guildId: { type: String, required: true, unique: true },
-  settings: {
-    nftCollections: [{ contract: String, name: String }],
-    roleRules: [{ roleId: String, requiredNft: String }]
-  }
+  isWhitelisted: { type: Boolean, default: false },
 });
 
-const Guild = mongoose.model('Guild', guildSchema);
-
-module.exports = Guild;
+module.exports = mongoose.model('Guild', guildSchema);

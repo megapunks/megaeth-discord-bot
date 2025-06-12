@@ -1,48 +1,58 @@
-const { Client, GatewayIntentBits, Partials, Events } = require('discord.js');
-const connectToDatabase = require('../database');
+const { Client, GatewayIntentBits, Partials, Events, Collection, REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const ApprovedGuild = require('../models/ApprovedGuild');
+const connectToDatabase = require('../database');
+require('dotenv').config();
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
   partials: [Partials.Channel]
 });
 
-client.once(Events.ClientReady, () => {
-  console.log(`✅ Logged in as ${client.user.tag}`);
-});
+client.commands = new Collection();
 
-client.commands = new Map();
+// Load slash commands
+const commands = [];
 const commandsPath = path.join(__dirname, '../commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-  const command = require(`../commands/${file}`);
-  if (!command.data || !command.data.name) {
+  const filePath = path.join(commandsPath, file);
+  const command = require(filePath);
+  if ('data' in command && 'execute' in command) {
+    client.commands.set(command.data.name, command);
+    commands.push(command.data.toJSON());
+  } else {
     console.warn(`⚠️ Skipped invalid command file: ${file}`);
-    continue;
   }
-  client.commands.set(command.data.name, command);
 }
+
+client.once(Events.ClientReady, async () => {
+  console.log(`✅ Logged in as ${client.user.tag}`);
+
+  try {
+    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+    await rest.put(
+      Routes.applicationCommands(process.env.CLIENT_ID),
+      { body: commands }
+    );
+    console.log('✅ Successfully registered application commands');
+  } catch (error) {
+    console.error('❌ Failed to register commands:', error);
+  }
+});
 
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
-  const guildId = interaction.guildId;
-  const approved = await ApprovedGuild.findOne({ guildId });
-  if (!approved) {
-    await interaction.reply({ content: '❌ این سرور مجوز استفاده از ربات را ندارد.', ephemeral: true });
-    return;
-  }
-
   const command = client.commands.get(interaction.commandName);
   if (!command) return;
+
   try {
     await command.execute(interaction);
-  } catch (err) {
-    console.error(err);
-    await interaction.reply({ content: '❌ Error occurred', ephemeral: true });
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({ content: '❌ An error occurred while executing the command.', ephemeral: true });
   }
 });
 
