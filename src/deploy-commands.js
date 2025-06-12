@@ -15,7 +15,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 // جایگزین با آی‌دی خودت:
 const clientId = '1382438594647429283';
-const guildId = 'YOUR_GUILD_ID';
+const guildId = '1382713892958109696';
 
 (async () => {
   try {
