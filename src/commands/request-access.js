@@ -1,26 +1,25 @@
 const { SlashCommandBuilder } = require('discord.js');
-const ApprovedGuild = require('../models/ApprovedGuild');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('request-access')
-    .setDescription('درخواست استفاده از ربات برای سرور شما'),
-
+    .setDescription('Request permission to use this bot on your server.'),
   async execute(interaction) {
-    const guildId = interaction.guild.id;
+    const owner = '1382438594647429283'; // Bot admin user ID
+    const requestInfo = `
+🔔 New Access Request:
+Server: ${interaction.guild.name}
+Server ID: ${interaction.guild.id}
+Requested by: ${interaction.user.tag} (${interaction.user.id})
+`;
 
-    let existing = await ApprovedGuild.findOne({ guildId });
-    if (existing && existing.status === 'approved') {
-      return interaction.reply({ content: '✅ سرور شما قبلاً تایید شده است.', ephemeral: true });
+    try {
+      const user = await interaction.client.users.fetch(owner);
+      await user.send(requestInfo);
+      await interaction.reply({ content: '✅ Your request has been sent to the bot admin.', ephemeral: true });
+    } catch (err) {
+      console.error(err);
+      await interaction.reply({ content: '❌ Failed to send your request. Please try again later.', ephemeral: true });
     }
-
-    if (!existing) {
-      await ApprovedGuild.create({ guildId });
-    }
-
-    await interaction.reply({
-      content: '📨 درخواست شما ثبت شد. پس از تأیید، ربات فعال خواهد شد.',
-      ephemeral: true
-    });
   }
 };

@@ -3,9 +3,6 @@ const connectToDatabase = require('../database');
 const fs = require('fs');
 const path = require('path');
 
-// ↓ اضافه شده: اجرای deploy-commands در بار اول
-const deployCommands = require('../deploy-commands');
-
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
   partials: [Partials.Channel]
@@ -46,14 +43,5 @@ connectToDatabase().then(() => {
     console.error('❌ DISCORD_TOKEN is missing!');
     process.exit(1);
   }
-
-  // 🧠 فقط بار اول دستورها را ثبت کن
-  const commandsDeployedFile = path.join(__dirname, '../.commandsDeployed');
-  if (!fs.existsSync(commandsDeployedFile)) {
-    deployCommands().then(() => {
-      fs.writeFileSync(commandsDeployedFile, 'ok');
-    });
-  }
-
   client.login(token);
 });
