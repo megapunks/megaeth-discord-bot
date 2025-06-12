@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits, Partials, Events } = require('discord.js');
 const connectToDatabase = require('../database');
 const fs = require('fs');
 const path = require('path');
+const ApprovedGuild = require('../models/ApprovedGuild');
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -27,6 +28,14 @@ for (const file of commandFiles) {
 
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
+
+  const guildId = interaction.guildId;
+  const approved = await ApprovedGuild.findOne({ guildId });
+  if (!approved) {
+    await interaction.reply({ content: '❌ این سرور مجوز استفاده از ربات را ندارد.', ephemeral: true });
+    return;
+  }
+
   const command = client.commands.get(interaction.commandName);
   if (!command) return;
   try {
