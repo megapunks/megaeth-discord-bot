@@ -1,4 +1,4 @@
-require('../deploy-commands');
+const deploy = require('../deploy-commands');
 const { Client, GatewayIntentBits, Partials, Events } = require('discord.js');
 const connectToDatabase = require('../database');
 const fs = require('fs');
