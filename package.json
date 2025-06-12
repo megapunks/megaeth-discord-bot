@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-  "dev": "nodemon src/bot/index.ts",
-  "start": "node dist/bot/index.js",
-  "build": "tsc",
-  "lint": "npx tsc --noEmit",
-  "watch": "tsc -w"
-},
+    "dev": "nodemon src/bot/index.ts",
+    "start": "node dist/bot/index.js",
+    "build": "tsc",
+    "lint": "npx tsc --noEmit",
+    "watch": "tsc -w"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
