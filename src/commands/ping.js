@@ -1,7 +1,9 @@
-// src/commands/ping.js
 module.exports = {
-  name: 'ping',
-  execute(interaction) {
-    interaction.reply('Pong!');
+  data: {
+    name: 'ping',
+    description: 'Replies with Pong!'
+  },
+  async execute(interaction) {
+    await interaction.reply('🏓 Pong!');
   }
 };
