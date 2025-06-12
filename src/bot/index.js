@@ -1,5 +1,4 @@
-const deployCommands = require('../deploy-commands');
-const { Client, GatewayIntentBits, Partials, Events } = require('discord.js');
+const { REST, Routes, Client, GatewayIntentBits, Partials, Events } = require('discord.js');
 const connectToDatabase = require('../database');
 const fs = require('fs');
 const path = require('path');
@@ -9,22 +8,38 @@ const client = new Client({
   partials: [Partials.Channel]
 });
 
-client.once(Events.ClientReady, () => {
+client.once(Events.ClientReady, async () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
+
+  // Deploy commands inline
+  const commands = [];
+  const commandsPath = path.join(__dirname, '../commands');
+  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+  for (const file of commandFiles) {
+    const command = require(`../commands/${file}`);
+    if (command.data) {
+      commands.push(command.data.toJSON());
+      client.commands.set(command.data.name, command);
+    } else {
+      console.warn(`⚠️ Skipped invalid command file: ${file}`);
+    }
+  }
+
+  const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+  try {
+    console.log('🔁 Deploying commands to test guild...');
+    await rest.put(
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.TEST_GUILD_ID),
+      { body: commands }
+    );
+    console.log('✅ Commands deployed successfully.');
+  } catch (err) {
+    console.error('❌ Failed to deploy commands:', err);
+  }
 });
 
 client.commands = new Map();
-const commandsPath = path.join(__dirname, '../commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-  const command = require(`../commands/${file}`);
-  if (!command.data || !command.data.name) {
-    console.warn(`⚠️ Skipped invalid command file: ${file}`);
-    continue;
-  }
-  client.commands.set(command.data.name, command);
-}
 
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
@@ -44,11 +59,5 @@ connectToDatabase().then(() => {
     console.error('❌ DISCORD_TOKEN is missing!');
     process.exit(1);
   }
-
-  // Deploy slash commands on startup (guild-scoped)
-  deployCommands().then(() => {
-    console.log('🚀 Slash commands deployed.');
-  });
-
   client.login(token);
 });
