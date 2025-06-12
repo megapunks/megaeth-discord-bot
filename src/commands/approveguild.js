@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const ApprovedGuild = require('../models/ApprovedGuild');
+const ApprovedGuild = require('../database/models/ApprovedGuild');
 
 module.exports = {
   data: new SlashCommandBuilder()
