@@ -29,3 +29,16 @@ const guildId = '1382713892958109696';
     console.error('❌ Failed to deploy commands:', error);
   }
 })();
+
+module.exports = async () => {
+  try {
+    console.log('🔁 Refreshing application (/) commands...');
+    await rest.put(
+      Routes.applicationGuildCommands(clientId, guildId),
+      { body: commands }
+    );
+    console.log('✅ Successfully reloaded commands.');
+  } catch (error) {
+    console.error('❌ Failed to deploy commands:', error);
+  }
+};
