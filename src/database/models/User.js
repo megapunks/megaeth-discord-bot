@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const userSchema = new mongoose.Schema({
-  discordId: { type: String, required: true },
-  walletAddress: { type: String, required: true },
-  guildId: { type: String, required: true },
-  lastChecked: { type: Date, default: Date.now }
-});
-
-module.exports = mongoose.model('User', userSchema);
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription('Replies with Pong!'),
+  async execute(interaction) {
+    await interaction.reply('🏓 Pong!');
+  }
+};
