@@ -1,12 +1,8 @@
+const deployCommands = require('../deploy-commands');
 const { Client, GatewayIntentBits, Partials, Events } = require('discord.js');
 const connectToDatabase = require('../database');
 const fs = require('fs');
 const path = require('path');
-
-// فقط اگر نیاز به deploy داریم:
-if (process.env.DEPLOY_COMMANDS === 'true') {
-  require('../deploy-commands');
-}
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -48,5 +44,11 @@ connectToDatabase().then(() => {
     console.error('❌ DISCORD_TOKEN is missing!');
     process.exit(1);
   }
+
+  // Deploy slash commands on startup (guild-scoped)
+  deployCommands().then(() => {
+    console.log('🚀 Slash commands deployed.');
+  });
+
   client.login(token);
 });

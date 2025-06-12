@@ -12,19 +12,18 @@ for (const file of commandFiles) {
 }
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
-
 const clientId = process.env.CLIENT_ID;
-const guildId = process.env.GUILD_ID;
+const guildId = process.env.TEST_GUILD_ID;
 
-(async () => {
+module.exports = async () => {
   try {
     console.log('🔁 Deploying commands to test guild...');
     await rest.put(
       Routes.applicationGuildCommands(clientId, guildId),
       { body: commands }
     );
-    console.log('✅ Commands deployed to guild.');
+    console.log('✅ Commands deployed successfully.');
   } catch (error) {
     console.error('❌ Failed to deploy commands:', error);
   }
-})();
+};
