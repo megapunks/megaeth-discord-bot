@@ -2,31 +2,20 @@
   "name": "megaeth-discord-bot",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
+    "start": "npx ts-node src/bot/index.ts",
     "dev": "nodemon src/bot/index.ts",
-    "start": "node dist/bot/index.js",
-    "build": "tsc",
     "lint": "npx tsc --noEmit",
     "watch": "tsc -w"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "description": "",
   "dependencies": {
-    "cors": "^2.8.5",
     "discord.js": "^14.19.3",
     "dotenv": "^16.5.0",
     "ethers": "^6.14.3",
     "express": "^5.1.0",
-    "mongoose": "^8.15.1"
-  },
-  "devDependencies": {
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.0.0",
-    "@types/ws": "^8.18.1",
-    "nodemon": "^3.1.10",
+    "mongoose": "^8.15.1",
+    "cors": "^2.8.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
